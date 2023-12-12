@@ -7,8 +7,8 @@ import numpy.linalg as la
 #no unnamed or undocumented variable please 
 
 #documentation of variables
-point = tuple(float,float) | np.ndarray
-edge = tuple(point,point) | np.ndarray
+point = tuple[float, float] | np.ndarray
+edge = tuple[point, point] | np.ndarray
 
 
 #init and methods pertaining to a single element in the mesh
@@ -57,3 +57,12 @@ def DrawMesh(mesh):
     pass
     
 #task 8, call relevant methods and initialize classes to calculate the areas of the files provided in ./meshes (in particular dolfin) 
+
+
+
+#main
+def main(): 
+    pass
+
+if __name__ == '__main__': 
+    main()
