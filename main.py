@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import numpy.linalg as la
 
 #naming convention: camelCase
-#no unnamed or undocumented variable please 
+#no unnamed or undocumented variables or functions please 
 
 #documentation of variables
 point = tuple[float, float] | np.ndarray
-edge = tuple[point, point] | np.ndarray
+edge  = tuple[point, point] | np.ndarray
 
 
 #init and methods pertaining to a single element in the mesh
@@ -30,16 +30,18 @@ class Triangle:
         pass
 
     #task 2, write a method that calculates the jacobian for one elements transformation
-    def JacobianOfTransformation(): 
-        pass
+    def JacobianOfTransformation(self) -> float: 
+        return la.matrix.det(np.array([self.corner2[0] - self.corner1[0], self.corner3[0] - self.corner1[0]],
+                                      [self.corner2[1] - self.corner1[1], self.corner3[1] - self.corner1[1]]))
 
-    #task 3, compute minimum angle between edges
-    def MinimumAngleInTriangle(): 
+    #task 3, compute minimum angle between edges and determine whether it is too small or not
+    def IsMinimumAngleInTriangleSmol() -> bool: 
         pass
 
 #init and methods pertaining to all the elements in the mesh
 class Mesh: 
     
+    #should we read the file here or what? separate method for reading the file in the class maybe 
     def __init__():
         pass
 
@@ -48,7 +50,7 @@ class Mesh:
         pass
 
     #task 6, method which computes the sum of all triangles in a mesh
-    def TriangleArea():
+    def TriangleArea() -> float:
         pass
 
 
@@ -58,9 +60,7 @@ def DrawMesh(mesh):
     
 #task 8, call relevant methods and initialize classes to calculate the areas of the files provided in ./meshes (in particular dolfin) 
 
-
-
-#main
+#main, initialising instances etc is done here 
 def main(): 
     pass
 
