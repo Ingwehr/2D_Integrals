@@ -19,12 +19,13 @@ class Triangle:
         self.corner2 = corner2
         self.corner3 = corner3
 
-    #check if a point p is inside the instance or outside
+    #check if a point p is inside the instance or outside, this does not work in all cases :)) 
     def PointInTriangle(self,p: point) -> bool: 
-        v1 = (self.corner2[1] - self.corner1[1],-self.corner2[0] + self.corner1[0])
-        v2 = (self.corner3[1] - self.corner2[1],-self.corner3[0] + self.corner2[0])
-        v3 = (self.corner1[1] - self.corner3[1],-self.corner1[0] + self.corner3[0])
+        v1 = (self.corner2[1] - self.corner1[1], -self.corner2[0] + self.corner1[0])
+        v2 = (self.corner3[1] - self.corner2[1], -self.corner3[0] + self.corner2[0])
+        v3 = (self.corner1[1] - self.corner3[1], -self.corner1[0] + self.corner3[0])
 
+        #vectors from corner to point
         v_1 = (p[0] - self.corner1[0], p[1] - self.corner1[1])
         v_2 = (p[0] - self.corner2[0], p[1] - self.corner2[1])
         v_3 = (p[0] - self.corner3[0], p[1] - self.corner3[1])
@@ -38,7 +39,7 @@ class Triangle:
                                           [self.corner2[1] - self.corner1[1], self.corner3[1] - self.corner1[1]])))
 
     #task 3, compute minimum angle between edges and determine whether it is too small or not
-    def IsMinimumAngleInTriangleSmol() -> bool: 
+    def IsMinimumAngleInTriangleToSmall() -> bool: 
         pass 
     
     #printing the insteance returns '(c1,c2,c3)'
@@ -48,11 +49,17 @@ class Triangle:
     def AreaOfTriangle(self) -> float: 
         pass
 
+    def __add__(self, other) -> float: 
+        return self.AreaOfTriangle() + other
+
+    def __radd__(self, other) -> float: 
+        return self.AreaOfTriangle() + other
+
 #init and methods pertaining to all the elements in the mesh
 class Mesh: 
     
     #initialized with the meshlayers points and triangles
-    def __init__(self,nodePath,coordPath):
+    def __init__(self, nodePath: str, coordPath: str):
         self.points = ReadCoordFile(coordPath)
         self.triangles = ReadNodeFile(nodePath,self.points)
 
@@ -66,9 +73,9 @@ class Mesh:
     def IntegralOfOmega(): 
         pass
 
-    #task 6, method which computes the sum of all triangles in a mesh
-    def TotalTriangleArea() -> float:
-        pass
+    #task 6, method which computes the sum of all triangles in a function f(x,y) describing an area
+    def TotalTriangleArea(self) -> float:
+        return sum(self.traingles)
 
     def __str__(self): 
         print(f'({self.points},{self.triangles})')
@@ -95,10 +102,9 @@ def ReadNodeFile(path: str, coordinates: list) -> list:
         triangles.append(Triangle(coordinates[p1[ind+1]],coordinates[p2[ind+1]],coordinates[p3[ind+1]]))
     return(triangles)
 
-
 #main, initialising instances etc is done here 
 def main(): 
-    pass
+    pass 
 
 if __name__ == '__main__': 
     main()
