@@ -8,77 +8,58 @@ import numpy.linalg as la
 
 #documentation of variables
 point = tuple[float, float] | np.ndarray
-#edge  = tuple[point, point] | np.ndarray # on the form (node,node,norm(node,node))
+edge  = tuple[point, point] | np.ndarray # on the form (node,node,norm(node,node))
 
 #init and methods pertaining to a single element in the mesh
 class Triangle: 
     
     #the triangle is initialized with its three corners and the corresponding edges (they might be unnecessary dunno)
-    def __init__(self, corner1: point, corner2: point, corner3: point): 
+    def __init__(self, corner1: point, corner2: point, corner3: point, func): 
         self.corner1 = corner1
         self.corner2 = corner2
         self.corner3 = corner3
 
-    #check if a point p is inside the instance or outside, this does not work in all cases :)) 
-    def PointInTriangle(self,p: point) -> bool: 
-        v1 = (self.corner2[1] - self.corner1[1], -self.corner2[0] + self.corner1[0])
-        v2 = (self.corner3[1] - self.corner2[1], -self.corner3[0] + self.corner2[0])
-        v3 = (self.corner1[1] - self.corner3[1], -self.corner1[0] + self.corner3[0])
+        self.func = func
 
-        #vectors from corner to point
-        v_1 = (p[0] - self.corner1[0], p[1] - self.corner1[1])
-        v_2 = (p[0] - self.corner2[0], p[1] - self.corner2[1])
-        v_3 = (p[0] - self.corner3[0], p[1] - self.corner3[1])
+        if not self.MinimumAngle(): 
+            raise Exception('Angle in triangle too small')
 
-        #if the signs match, then return True, else False
-        return np.sign(np.dot(v1,v_1)) == np.sign(np.dot(v2,v_2)) == np.sign(np.dot(v3,v_3))
-
-    #task 2, write a method that calculates the jacobian for one elements transformation
-    def JacobianOfTransformation(self) -> float: 
-        return abs(la.matrix.det(np.array([self.corner2[0] - self.corner1[0], self.corner3[0] - self.corner1[0]],
-                                          [self.corner2[1] - self.corner1[1], self.corner3[1] - self.corner1[1]])))
+    #task 2, write a method that calculates the absolute of the jacobian determinant for one self's transformation
+    def JacobianOfTransformationDeterminant(self) -> float: 
+        return abs(la.det(np.array([[self.corner2[0] - self.corner1[0], self.corner3[0] - self.corner1[0]],
+                                    [self.corner2[1] - self.corner1[1], self.corner3[1] - self.corner1[1]]])))
 
     #task 3, compute minimum angle between edges and determine whether it is too small or not
-    def IsMinimumAngleInTriangleToSmall() -> bool: 
-        pass 
+    def MinimumAngle(self) -> bool: 
+        return True
     
-    #printing the insteance returns '(c1,c2,c3)'
-    def __str__(self) -> None: 
-        print(f'({self.corner1},{self.corner2},{self.corner3})')
-
-    def AreaOfTriangle(self) -> float: 
-        pass
+    def VolumeOfPrism(self) -> float: 
+        return (
+        self.JacobianOfTransformationDeterminant() *
+        sum((self.func(*self.corner1),  
+             self.func(*self.corner2), 
+             self.func(*self.corner3))) * 
+        (1/6)) 
 
     def __add__(self, other) -> float: 
-        return self.AreaOfTriangle() + other
+        return self.VolumeOfPrism() + other
 
     def __radd__(self, other) -> float: 
-        return self.AreaOfTriangle() + other
+        return self.VolumeOfPrism() + other
 
 #init and methods pertaining to all the elements in the mesh
 class Mesh: 
     
     #initialized with the meshlayers points and triangles
-    def __init__(self, nodePath: str, coordPath: str):
+    def __init__(self, nodePath: str, coordPath: str, func):
+        self.func = func
         self.points = ReadCoordFile(coordPath)
-        self.triangles = ReadNodeFile(nodePath,self.points)
-
-    def InsideArea(self,p: point) -> bool:
-        for t in self.triangles: 
-            if t.PointInTriangle(p): 
-                return True
-        return False
-
-    #task 5, method which computes I_omega for any given function f
-    def IntegralOfOmega(): 
-        pass
+        self.triangles = ReadNodeFile(nodePath,self.points,self.func)
+        
 
     #task 6, method which computes the sum of all triangles in a function f(x,y) describing an area
     def TotalTriangleArea(self) -> float:
-        return sum(self.traingles)
-
-    def __str__(self): 
-        print(f'({self.points},{self.triangles})')
+        return sum(self.triangles)
 
 #task 7, draw the mesh as in figure 1  (see instruction, extension pdf preview might be needed if in vscode)
 def DrawMesh(mesh): 
@@ -89,22 +70,36 @@ def DrawMesh(mesh):
 def ReadCoordFile(path: str) -> list: 
     with open(path,'r') as f: 
         x,y = f.readlines()
-    coordinates = []
-    for ind,element in x: 
-        coordinates.append(tuple(x[ind],y[ind]))
-    return(coordinates)
+        x,y = x.split(),y.split()
 
-def ReadNodeFile(path: str, coordinates: list) -> list:
-    with open(path,'r') as f: 
+        coordinates = []
+
+        for ind,_ in enumerate(x): 
+            coordinates.append((float(x[ind]),float(y[ind])))
+        
+        return coordinates
+
+def ReadNodeFile(path: str, coordinates: list, func) -> list:
+    with open(path, 'r') as f: 
         p1,p2,p3 = f.readlines()
-    triangles = []        
-    for ind,element in p1: 
-        triangles.append(Triangle(coordinates[p1[ind+1]],coordinates[p2[ind+1]],coordinates[p3[ind+1]]))
-    return(triangles)
+        p1,p2,p3 = p1.split(),p2.split(),p3.split()
+
+        triangles = []
+
+        for ind,_ in enumerate(p1): 
+            triangles.append(Triangle(
+                coordinates[int(float(p1[ind])) - 1],
+                coordinates[int(float(p2[ind])) - 1],
+                coordinates[int(float(p3[ind])) - 1],
+                func
+            ))
+        return triangles
 
 #main, initialising instances etc is done here 
 def main(): 
-    pass 
+    f = lambda x, y : 1
+    mesh = Mesh('meshes/nodes_dolphin_coarse.txt', 'meshes/coordinates_dolphin_coarse.txt', f)
+    print(1 - mesh.TotalTriangleArea())
 
 if __name__ == '__main__': 
     main()
