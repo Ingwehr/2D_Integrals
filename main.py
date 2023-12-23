@@ -71,7 +71,75 @@ def ReadNodeFile(path: str, coordinates: list, func) -> list:
             coordinates[int(float(p3[ind])) - 1],
             func))
     return triangles
+def ReadNodeForPlot(path: str):
+    with open(path, 'r') as f: 
+        p1,p2,p3 = f.readlines()
+        p1,p2,p3 = p1.split(),p2.split(),p3.split()
+        
+    nodes = []
 
+    for ind,_ in enumerate(p1): 
+        nodes.append((int(float(p1[ind])),int(float(p2[ind])),int(float(p3[ind]))))
+    
+    return nodes
+
+def plot(coordinatess:str,nodess:str):
+    coords_plot=ReadCoordFile(coordinatess)
+    nodes_plot=ReadNodeForPlot(nodess)
+    pre_final_points=[]
+    for i in range(len(nodes_plot)):
+        plot_points=[]
+        for j in range(3):
+            points=coords_plot[nodes_plot[i][j]-1]
+            if (points[0]<1e-10 and points[0]>0) or (points[0]>-1e-10 and points[0]<0):
+                points=list(points)
+                points[0]=0
+                points=tuple(points)
+            if (points[1]<1e-10 and points[1]>0) or (points[1]>-1e-10 and points[1]<0):
+                points=list(points)
+                points[1]=0
+                points=tuple(points)
+            plot_points.append(points)
+        pre_final_points.append(plot_points)
+    final_points=[]
+    for i in pre_final_points:
+        x_c=(i[0][0]+i[1][0]+i[2][0])/3
+        y_c=(i[0][1]+i[1][1]+i[2][1])/3
+        if (x_c<1e-5 and x_c>0) or (x_c>-1e-5 and x_c<0):
+            x_c=0
+        if (y_c<1e-5 and y_c>0) or (y_c>-1e-5 and y_c<0):
+            y_c=0
+        centroid=[x_c,y_c]
+        resized_points=[]
+        for j in i:
+            if j[1]!=centroid[1]:
+                if j[1]<centroid[1]:
+                    y=j[1]-((j[1]-centroid[1])/10)
+                elif j[1]>centroid[1]:
+                    y=j[1]-((j[1]-centroid[1])/10)
+                x_1=centroid[0]
+                x_2=j[0]
+                y_1=centroid[1]
+                y_2=j[1]
+                x=((y*x_1 - y*x_2 - x_1*y_1 + x_2*y_1)/(y_1 - y_2))+x_1
+            else:
+                if j[0]>centroid[0]:
+                    x=j[0]-.02
+                else:
+                    x=j[0]+.02
+                y=centroid[1]
+            tupled_points=(x,y)
+            resized_points.append(tupled_points)
+        final_points.append(resized_points)
+    fig, ax = plt.subplots()
+    ax.set_aspect('equal', adjustable='box')
+    colors = np.random.rand(len(final_points), 3)
+    for triangle_points,color in zip(final_points,colors):
+        triangle = Polygon(triangle_points, edgecolor=color, linewidth=1, facecolor='None')
+        ax.add_patch(triangle)
+    ax.set_xlim(-1,1)
+    ax.set_ylim(-1,1)
+    plt.show()
 def main(): 
     f = lambda x, y : 1
     mesh = Mesh('meshes/nodes_unitcircle_10000.txt', 'meshes/coordinates_unitcircle_10000.txt', f)
