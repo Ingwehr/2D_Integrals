@@ -2,6 +2,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt 
 import numpy.linalg as la
+from matplotlib.patches import *
 
 #naming convention: camelCase
 #no unnamed or undocumented variables or functions please 
@@ -28,8 +29,10 @@ class Triangle:
         edges = [np.sqrt((self.corner1[0] - self.coner2[0]**2) + (self.corner1[1] - self.corner2[1])), 
                  np.sqrt((self.corner2[0] - self.coner3[0]**2) + (self.corner2[1] - self.corner3[1])),
                  np.sqrt((self.corner3[0] - self.coner1[0]**2) + (self.corner3[1] - self.corner1[1]))]
+        
         shortestEdge = min(edges)
         edges.pop(shortestEdge)
+        
         return np.arccos((shortestEdge * shortestEdge - edges[1] * edges[1] - edges[0] * edges[0]) / 2 * edges[0] * edges[1]) < np.pi / 32
     
     def VolumeOfPrism(self) -> float: 
@@ -118,6 +121,7 @@ def plot(coordinatess:str, nodess:str) -> None:
         resized_points=[]
         for j in i:
             if j[1]!=centroid[1]:
+                #change number for different resolution
                 if j[1]<centroid[1]:
                     y=j[1]-((j[1]-centroid[1])/10)
                 elif j[1]>centroid[1]:
@@ -144,6 +148,7 @@ def plot(coordinatess:str, nodess:str) -> None:
         ax.add_patch(triangle)
     ax.set_xlim(-1,1)
     ax.set_ylim(-1,1)
+    plt.rcParams['figure.dpi'] = 500
     plt.show()
 
 def main(): 
