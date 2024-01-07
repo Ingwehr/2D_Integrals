@@ -18,14 +18,19 @@ class Triangle:
         self.func = func
 
         if self.TooSmallAngle(): 
-            raise Exception('Angle in triangle too small')
+            raise Exception('Triangle too thin')
 
     def JacobianDeterminant(self) -> float: 
         return abs(la.det(np.array([[self.corner2[0] - self.corner1[0], self.corner3[0] - self.corner1[0]],
                                     [self.corner2[1] - self.corner1[1], self.corner3[1] - self.corner1[1]]])))
 
     def TooSmallAngle(self) -> bool: 
-        return False
+        edges = [np.sqrt((self.corner1[0] - self.coner2[0]**2) + (self.corner1[1] - self.corner2[1])), 
+                 np.sqrt((self.corner2[0] - self.coner3[0]**2) + (self.corner2[1] - self.corner3[1])),
+                 np.sqrt((self.corner3[0] - self.coner1[0]**2) + (self.corner3[1] - self.corner1[1]))]
+        shortestEdge = min(edges)
+        edges.pop(shortestEdge)
+        return np.arccos((shortestEdge * shortestEdge - edges[1] * edges[1] - edges[0] * edges[0]) / 2 * edges[0] * edges[1]) < np.pi / 32
     
     def VolumeOfPrism(self) -> float: 
         return self.JacobianDeterminant() * (1/6) * (self.func(*self.corner1) + self.func(*self.corner2) + self.func(*self.corner3)) 
