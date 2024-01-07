@@ -83,7 +83,7 @@ def ReadNodeForPlot(path: str):
     
     return nodes
 
-def plot(coordinatess:str,nodess:str):
+def plot(coordinatess:str, nodess:str) -> None:
     coords_plot=ReadCoordFile(coordinatess)
     nodes_plot=ReadNodeForPlot(nodess)
     pre_final_points=[]
@@ -140,6 +140,7 @@ def plot(coordinatess:str,nodess:str):
     ax.set_xlim(-1,1)
     ax.set_ylim(-1,1)
     plt.show()
+
 def main(): 
     f = lambda x, y : 1
     mesh = Mesh('meshes/nodes_unitcircle_10000.txt', 'meshes/coordinates_unitcircle_10000.txt', f)
