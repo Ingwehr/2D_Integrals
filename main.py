@@ -27,13 +27,12 @@ class Triangle:
 
     def TooSmallAngle(self) -> bool: 
         edges = [np.sqrt((self.corner1[0] - self.corner2[0])**2 + (self.corner1[1] - self.corner2[1])**2),
-                np.sqrt((self.corner2[0] - self.corner3[0])**2 + (self.corner2[1] - self.corner3[1])**2),
-                np.sqrt((self.corner3[0] - self.corner1[0])**2 + (self.corner3[1] - self.corner1[1])**2)]
+                 np.sqrt((self.corner2[0] - self.corner3[0])**2 + (self.corner2[1] - self.corner3[1])**2),
+                 np.sqrt((self.corner3[0] - self.corner1[0])**2 + (self.corner3[1] - self.corner1[1])**2)]
         
-        shortestEdge = min(edges)
-        edges.pop(shortestEdge)
+        edges.sort()
         
-        return np.arccos((shortestEdge * shortestEdge - edges[1] * edges[1] - edges[0] * edges[0]) / 2 * edges[0] * edges[1]) < np.pi / 32
+        return np.arccos(((edges[2] * edges[2]) + edges[1] * edges[1] - edges[0] * edges[0]) / (2 * edges[1] * edges[2])) < (np.pi / 32)
     
     def VolumeOfPrism(self) -> float: 
         return self.JacobianDeterminant() * (1/6) * (self.func(*self.corner1) + self.func(*self.corner2) + self.func(*self.corner3)) 
