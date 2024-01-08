@@ -26,9 +26,9 @@ class Triangle:
                                     [self.corner2[1] - self.corner1[1], self.corner3[1] - self.corner1[1]]])))
 
     def TooSmallAngle(self) -> bool: 
-        edges = [np.sqrt((self.corner1[0] - self.coner2[0]**2) + (self.corner1[1] - self.corner2[1])), 
-                 np.sqrt((self.corner2[0] - self.coner3[0]**2) + (self.corner2[1] - self.corner3[1])),
-                 np.sqrt((self.corner3[0] - self.coner1[0]**2) + (self.corner3[1] - self.corner1[1]))]
+        edges = [np.sqrt((self.corner1[0] - self.corner2[0])**2 + (self.corner1[1] - self.corner2[1])**2),
+                np.sqrt((self.corner2[0] - self.corner3[0])**2 + (self.corner2[1] - self.corner3[1])**2),
+                np.sqrt((self.corner3[0] - self.corner1[0])**2 + (self.corner3[1] - self.corner1[1])**2)]
         
         shortestEdge = min(edges)
         edges.pop(shortestEdge)
@@ -91,7 +91,7 @@ def ReadNodeForPlot(path: str):
     
     return nodes
 
-def plot(coordinatess:str, nodess:str) -> None:
+def plot(nodess:str , coordinatess:str) -> None:
     coords_plot=ReadCoordFile(coordinatess)
     nodes_plot=ReadNodeForPlot(nodess)
     pre_final_points=[]
